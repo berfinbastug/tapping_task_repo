@@ -1,1 +1,7 @@
-.wav
+*.wav
+*.pkl
+*.tsv
+
+.DS_Store
+.DS_Store?
+
