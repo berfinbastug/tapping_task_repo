@@ -75,11 +75,11 @@ import this as ef
   * Present instructions
   * Just before starting the signal collection via the table microphone, clear the buffer one last time
   * Loop over trials
-   * Start the trial, give an instruction text
-   * Set up trial specific parameters
-   * Arrange timing: First Trial: The stimulus is presented 0.5 seconds after the start of the trial. Subsequent Trials: The stimulus onset time is based on the previous trial's onset time, reaction time, and the current trial's ITI. This ensures that each trial starts at a dynamically calculated time, allowing for variable reaction times and ITIs between trials.
-   * present stimuli and collect responses
-   * reset the clock
-   * get the key responses and attach the result to the output data frame
+    * Start the trial, give an instruction text
+    * Set up trial specific parameters
+    * Arrange timing: First Trial: The stimulus is presented 0.5 seconds after the start of the trial. Subsequent Trials: The stimulus onset time is based on the previous trial's onset time, reaction time, and the current trial's ITI. This ensures that each trial starts at a dynamically calculated time, allowing for variable reaction times and ITIs between trials.
+    * present stimuli and collect responses
+    * reset the clock
+    * get the key responses and attach the result to the output data frame
   * save the block specific data frame
   * give a feedback
