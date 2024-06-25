@@ -34,10 +34,10 @@
 * Rise time
 * Sampling frequency
 
-tone_cloud_production.py
+# tone_cloud_production.py
 This function generates tone clouds stimulus with specified frequency and time perturbations and repeated tones. It ensures reproducibility with a random seed and allows customization through parameter changes. The generated signal is normalized and padded to avoid clipping and ensure proper alignment.
 
-ramp_function.py
+# ramp_function.py
 The psyramp function is designed to apply a cosine-squared ramp (fade-in and fade-out) to a signal x. This can be useful in audio processing to smoothly transition the start and end of a signal to avoid abrupt changes, which can create clicks or other unwanted artifacts. 
 
 # data_frame_functions.py
