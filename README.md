@@ -47,3 +47,4 @@ import this as dff
 3. **check_consecutive_occurrences(array):**
 4. **pseudorandomize_and_save_df(df, which_block, exp_info, table_dir):**
 5. **save_output_df(output, experiment_mark, which_block, data_dir):** The function saves the provided output data to a file in a specified directory. The file is named based on the block number and experiment mark, and the data is saved in a tab-separated format without row indices.
+6. **save_tapping_output(file_path, output, participant_id, which_block):** This is different from the fifth one. File_path is a block and subject specific directory where their .wav files are stored. Along with those .wav files, we also save the presented stimulus information, which is output. This also contains the name list of the wav files that store the tapping information. 
