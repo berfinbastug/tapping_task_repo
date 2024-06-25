@@ -1,6 +1,6 @@
 """
 code to run the tapping experiment
-09.04.2024
+24.06.2024
 berfin bastug
 """
 #=====================
@@ -9,27 +9,26 @@ berfin bastug
 import pandas as pd
 import numpy as np
 import os
-import pickle
 
 from psychtoolbox import WaitSecs, GetSecs
-from psychopy import core, gui, visual, event, monitors
+from psychopy import core, gui, visual
 from psychopy.hardware import keyboard
-import psychopy.parallel as parallel
 from psychtoolbox import audio, PsychPortAudio
 from scipy.io import wavfile
-
-
-from run_experiment_functions import display_instruction,\
-    setup_audio_files, parse_response,\
-    get_datetime_string,\
-    save_output, create_a_new_folder_for_participants, save_numpy_as_wav
-
-from dataframe_functions import get_df, check_consecutive_occurrences,\
-    pseudorandomize_and_save_df
+import run_experiment_functions as ef
+import data_frame_functions as dff
 
 # experiment specific stuff
 import experiment_params as params
 
+#=====================
+#DEFINE DIRECTORIES
+#=====================
+# when I switch to a new computer, just change the main_dir
+main_dir = '/Users/bastugb/Desktop/tapping_experiment'
+stimuli_dir = main_dir + '/stimuli'
+data_dir = main_dir + '/data'
+table_dir = main_dir + '/tables'
 
 #=====================
 #COLLECT PARTICIPANT INFO
@@ -46,21 +45,19 @@ if exp_info['participant_id'] ==0: # nothing entered
     core.quit() #quit the experiment
     
 # get date and time
-time_stamp = get_datetime_string()[0]
+time_stamp = ef.get_datetime_string()[0]
 exp_info['time'] = time_stamp
 
 # create a unique filename for the data
 # don't forget to turn integers into strings for the filename, don't forget to add the filetype at the end: csv, txt...
-experiment_mark = 'tappingdata_toneclouds_pid' + str(exp_info['participant_id']) + '_' + exp_info['time'] + '.wav'
+experiment_mark = 'tapping_experiment_toneclouds_pid' + str(exp_info['participant_id']) + '_' + exp_info['time'] + '.wav'
 
 #=====================
 #SET UP THE SYSTEM 
 #=====================
 # prepare keyboard
 kb = keyboard.Keyboard()  # to handle input from keyboard (supersedes event.getKeys())
-
-# create response time clock
-# to be honest, I am not sure whether I am using this one currently?
+# create response time clock, to be honest, I am not sure whether I am using this one currently?
 timer = core.Clock()
 
 # define the window (size, color, units, fullscreen mode) 
@@ -69,12 +66,11 @@ timer = core.Clock()
 win = visual.Window([1920, 1080], fullscr=True, monitor="testMonitor", units="cm", screen = 1)
 
 
-
 # learn nblocks
 # counterbalance the order of block presentation
 # i think in my case there is no need for counterbalancing because all blocks are similar
-block_list = os.listdir(params.table_dir)
-block_list = [s for s in block_list if '.tsv' in s]
+files_in_tabledir = os.listdir(table_dir)
+block_list = [file for file in files_in_tabledir if file.endswith('.tsv')]
 nBlocks = params.nblocks
 
 #=====================
@@ -82,11 +78,12 @@ nBlocks = params.nblocks
 #=====================
 for iblock in range(nBlocks):
     which_block = iblock + 1
+    
     #=====================
     #READ THE BLOCK SPECIFIC DATA FRAME 
     #=====================
-    table_name = f'block_{which_block}_table.tsv'
-    df, nTrials = get_df(table_name, which_block, params)
+    table_name = f'tapping_experiment_block_{which_block}_table.tsv'
+    df, nTrials = dff.get_df(table_name, table_dir)
 
     #=====================
     #SHUFFLE THE DATA FRAME
@@ -95,19 +92,18 @@ for iblock in range(nBlocks):
     # condition: any value should not occur more than three times consecutively
     # shuffle dataframe rows until the condition is met
     # save this shuffled table immediately before you forget
-    df_shuffled = pseudorandomize_and_save_df(df, which_block, exp_info, params)
+    df_shuffled = dff.pseudorandomize_and_save_df(df, which_block, exp_info, table_dir)
 
 
     # Here, the tapping data will be stored
-    subject_block_specific_path  = params.data_dir + '/block' + str(which_block) + '/participantid_' + str(exp_info['participant_id'])
+    subject_block_specific_path  = data_dir + '/block' + str(which_block) + '/participantid_' + str(exp_info['participant_id'])
     os.makedirs(subject_block_specific_path, exist_ok=True)
     
     # give the instructions and block related information here
     block_start_text = f'Block {which_block} of {nBlocks}\n' + 'Press any key to start'
-    display_instruction(block_start_text, win)
+    ef.display_instruction(block_start_text, win)
     # Wait for any key press to continue
     kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
-
 
     #=====================
     #PRELOAD STIMULUI
@@ -116,10 +112,10 @@ for iblock in range(nBlocks):
     sound_filenames = df_shuffled['stim_name'].to_list()
     # this directory is necessary while reading from wav-files
     # search the sound in a specific block folder
-    stim_for_block = os.path.join(params.sound_dir,f'block{which_block}')  
+    stim_for_block = os.path.join(stimuli_dir,f'tapping_experiment_block{which_block}')  
     # define stimuli, which is stream in my case
     # setup audio stream 
-    stimuli, channels, fs = setup_audio_files(sound_filenames, stim_for_block, params)
+    stimuli, channels, fs = ef.setup_audio_files(sound_filenames, stim_for_block, params)
     
     device_ids = [i_device for i_device, device in enumerate(audio.get_devices()) if params.device_name in device['DeviceName']]
     for i_device, device in enumerate(audio.get_devices()):
@@ -139,6 +135,7 @@ for iblock in range(nBlocks):
     #=============
     # THIS PART IS CRUCIAL
     # now something like this is necessary I think 
+    # to record the audio from the microphone people tap
     stream[0].get_audio_data(secs_allocate = 1000)
     #=============
 
@@ -170,13 +167,13 @@ for iblock in range(nBlocks):
     # I also need the list of stimulus onset asynchrony (soa or isi)
     # In this context, it only matters when participants exceeds the response window.
     # It is the maximum amount of waiting time, if they respond earlier, ISI will be defined based on their reaction time
-    tISI = df_shuffled  ['isi'].to_list()
+    tISI = df_shuffled['isi'].to_list()
 
     #=====================
     #PREPARE DATA FRAME TO STORE OUTPUT
     #=====================
-    output_names = pd.DataFrame(columns=['trial_idx', 'tapping_file_name'])
-    # audio_data = []
+    output_data = pd.DataFrame(columns=['participant_id', 'time', 'block_idx', 'trial_idx', 'tapping_file_name', 'stim_code', 'unitdur', 'percentage'])
+
 
     #=====================
     #LEARN WHEN THE BLOCK STARTS AND CLEAR THE EXISTING EVENTS IF ANY

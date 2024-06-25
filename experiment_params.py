@@ -16,6 +16,13 @@ nblocks = 3
 iti = 1  # inter trial interval
 
 #=====================
+#OUTPUT
+#=====================
+output_data_columns = ['participant_id', 'time', 'block_idx', 
+                       'trial_idx', 'tapping_file_name', 'stim_code', 
+                       'unitdur', 'percentage']
+
+#=====================
 #SET UP AUDIO PARAMETERS
 #=====================
 # device_name = 'US-4x4HR: USB Audio (hw:0,0)'
