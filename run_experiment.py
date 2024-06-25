@@ -91,12 +91,12 @@ for iblock in range(nBlocks):
 
 
     # Here, the tapping data will be stored
-    subject_block_specific_path  = data_dir + '/block' + str(which_block) + '/participantid_' + str(exp_info['participant_id'])
+    subject_block_specific_path  = data_dir + '/tapping_experiment_block' + str(which_block) + '/participantid_' + str(exp_info['participant_id'])
     os.makedirs(subject_block_specific_path, exist_ok=True)
     
     # give the instructions and block related information here
     block_start_text = f'Block {which_block} of {nBlocks}\n' + 'Press any key to start'
-    ef.display_instruction(block_start_text, win)
+    ef.display_text(block_start_text, win)
     # Wait for any key press to continue
     kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
 
@@ -214,8 +214,8 @@ for iblock in range(nBlocks):
         toffsets[itrial] = GetSecs()
 
         sound_name = 'block_' + str(which_block) + '_itrial_' + str(itrial) + '_stimcode_' + str(stim_code) + '_unitdur_' + str(row['unitdur']) + '_percentage_' + str(row['percentage']) +  '_' + experiment_mark
-        stim_directory = subject_block_specific_path + '/' + sound_name
-        wavfile.write(stim_directory, fs, current_audio_data)
+        output_stim_directory = subject_block_specific_path + '/' + sound_name
+        wavfile.write(output_stim_directory, fs, current_audio_data)
         tmp_df = pd.DataFrame({'participant_id': exp_info['participant_id'],
                                'time': exp_info['time'],
                                'block_idx': [which_block],
@@ -227,11 +227,11 @@ for iblock in range(nBlocks):
         output_data = pd.concat([output_data, tmp_df], ignore_index=True)
 
     # save the name of the wav files at the end of an each block    
-    ef.save_output(subject_block_specific_path, output_data, exp_info['participant_id'], which_block)
+    dff.save_tapping_output(subject_block_specific_path, output_data, exp_info['participant_id'], which_block)
     stream[0].close()
 
 experiment_end_text = 'end of the experiment, press any bar to end the experiment'
-ef.display_instruction(experiment_end_text, win)
+ef.display_text(experiment_end_text, win)
 # Wait for any key press to continue
 kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
 

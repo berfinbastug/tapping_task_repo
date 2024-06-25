@@ -86,3 +86,14 @@ def save_output_df(output, experiment_mark, which_block, data_dir):
     file_name = 'block_no_'+ str(which_block)+ '_' + experiment_mark
     output_data_directory = op.join(data_dir, file_name)
     output.to_csv(output_data_directory, sep='\t', index=False)
+
+
+
+#=====================
+#SAVE OUPUT, NAME LIST OF THE WAV FILES THAT STORE THE TAPPING INFORMATION
+#====================
+def save_tapping_output(file_path, output, participant_id, which_block):
+    filename = 'tapping_experiment_toneclouds_output_data_pid_' + str(participant_id) + '_block_' + str(which_block) + '.tsv'
+    output_data_directory = file_path + '/' + filename
+    output.to_csv(output_data_directory, sep='\t', index=False)
+
