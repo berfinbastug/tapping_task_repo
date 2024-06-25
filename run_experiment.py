@@ -1,8 +1,3 @@
-"""
-code to run the tapping experiment
-24.06.2024
-berfin bastug
-"""
 #=====================
 # ESTABLISH THE WORKING ENVIRONMENT
 #=====================
@@ -172,8 +167,7 @@ for iblock in range(nBlocks):
     #=====================
     #PREPARE DATA FRAME TO STORE OUTPUT
     #=====================
-    output_data = pd.DataFrame(columns=['participant_id', 'time', 'block_idx', 'trial_idx', 'tapping_file_name', 'stim_code', 'unitdur', 'percentage'])
-
+    output_data = pd.DataFrame(columns=params.output_data_columns)
 
     #=====================
     #LEARN WHEN THE BLOCK STARTS AND CLEAR THE EXISTING EVENTS IF ANY
@@ -184,19 +178,18 @@ for iblock in range(nBlocks):
     #=====================
     # LOOP OVER TRIALS
     #=====================
-    stream[0].get_audio_data()
+    stream[0].get_audio_data()  # I think I am doing this to clear the buffer just before the recording
     for itrial in range(2):
         #=====================
         #START TRIAL
         #===================== 
         print(itrial)
-        t_trial = display_instruction(f'Trial {itrial + 1} of {nTrials}\n', win)
+        t_trial = ef.display_instruction(f'Trial {itrial + 1} of {nTrials}\n', win)
         
         # setup trial specific parameters
         row = df_shuffled.loc[itrial]
         stim_dur = row['stim_duration']
         stim_code = row['stim_code']
-        # max_wait_time = tISI[itrial]
         stim = stream[0].stimuli[row['stim_name']]
         stream[0].fill_buffer(stim)
 
@@ -206,6 +199,8 @@ for iblock in range(nBlocks):
             onset_time = wakeup + 0.5
         # after the first trial, the onset_time will be saved to the tonsets
         else:
+        # following trials, the stimulus onset is calculated based on the previous
+        # trial's onset time and a specified inter-stimulus interval
             onset_time = tonsets[itrial-1]+ tISI[itrial-1]
 
         # present stimuli and collect responses
@@ -215,22 +210,28 @@ for iblock in range(nBlocks):
         # current_audio_data, absrecposition, overflow, cstarttime = stream[0].get_audio_data(min_secs = min_stim_duration + 1)
         current_audio_data, absrecposition, overflow, cstarttime = stream[0].get_audio_data(min_secs = stim_dur + 1)
         
-        
         tonsets[itrial] = tonset  # update onset times
         toffsets[itrial] = GetSecs()
 
-        sound_name = 'itrial_' + str(itrial) + '_stimcode_' + str(stim_code) + '_block_' + str(which_block) + '_' + experiment_mark
+        sound_name = 'block_' + str(which_block) + '_itrial_' + str(itrial) + '_stimcode_' + str(stim_code) + '_unitdur_' + str(row['unitdur']) + '_percentage_' + str(row['percentage']) +  '_' + experiment_mark
         stim_directory = subject_block_specific_path + '/' + sound_name
         wavfile.write(stim_directory, fs, current_audio_data)
-        tmp_df = pd.DataFrame({'trial_idx': [itrial], 'tapping_file_name': [sound_name]})
-        output_names = pd.concat([output_names, tmp_df], ignore_index=True)
+        tmp_df = pd.DataFrame({'participant_id': exp_info['participant_id'],
+                               'time': exp_info['time'],
+                               'block_idx': [which_block],
+                               'trial_idx': [itrial], 
+                               'tapping_file_name': [sound_name],
+                               'stim_code': [row['stim_code']],
+                               'unitdur': [row['unitdur']],
+                               'percentage': [row['percentage']]})
+        output_data = pd.concat([output_data, tmp_df], ignore_index=True)
 
     # save the name of the wav files at the end of an each block    
-    save_output(subject_block_specific_path, output_names, exp_info['participant_id'], which_block)
+    ef.save_output(subject_block_specific_path, output_data, exp_info['participant_id'], which_block)
     stream[0].close()
 
 experiment_end_text = 'end of the experiment, press any bar to end the experiment'
-display_instruction(experiment_end_text, win)
+ef.display_instruction(experiment_end_text, win)
 # Wait for any key press to continue
 kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
 
