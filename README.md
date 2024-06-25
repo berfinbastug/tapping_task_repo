@@ -47,3 +47,39 @@ import this as dff
 3. **check_consecutive_occurrences(array):**
 4. **pseudorandomize_and_save_df(df, which_block, exp_info, table_dir):**
 5. **save_output_df(output, experiment_mark, which_block, data_dir):** The function saves the provided output data to a file in a specified directory. The file is named based on the block number and experiment mark, and the data is saved in a tab-separated format without row indices.
+6. **save_tapping_output(file_path, output, participant_id, which_block):** This is different from the fifth one. File_path is a block and subject specific directory where their .wav files are stored. Along with those .wav files, we also save the presented stimulus information, which is output. This also contains the name list of the wav files that store the tapping information.
+
+# run_experiment_functions.py 
+import this as ef
+1. get_datetime_string
+2. setup_audio_files (sound_filenames, stim_for_block, params): The function preloads and processes a list of audio files, ensuring they have a consistent sampling rate and number of channels. The audio data is scaled by a specified RMS value and stored in a dictionary for later use, along with the sampling rate and channel information.
+3. display_text(string, win): The function displays a string of text both on a PsychoPy window (if provided) and in the console. It then returns the time at which the text was displayed. The function uses PsychoPy's visual.TextStim to handle the graphical display of the text.
+
+
+# run_experiment.py
+* Establish the working environment
+* Define directories
+* Collect participant information
+* Experiment_mark: ‘tapping_experiment_toneclouds_pid_str(exp_info[‘participant_id’])_exp_info[‘time’].wav’ 
+* Set up the system
+* By preparing the keyboard, timer, windows, and learning about the blocks (their directory and number)
+* Loop over blocks
+  * Read the block specific data frame 
+  * Shuffle the data frame and save the shuffled data frame
+  * Present instructions and block related information
+  * Preload stimuli
+  * Define stimuli (stream)
+  * stream[0] .get_audio_data(secs_allocate = 1000) → this is specific to the tapping experiment, this is just there to obtain the signal from the microphone
+  * Timing parameters
+  * Prepare a data frame to store output [column names: participant_id, time, block_idx, trial_idx, tapping_file_name, stim_code, unitdur, percentage]
+  * Present instructions
+  * Just before starting the signal collection via the table microphone, clear the buffer one last time
+  * Loop over trials
+    * Start the trial, give an instruction text
+    * Set up trial specific parameters
+    * Arrange timing: First Trial: The stimulus is presented 0.5 seconds after the start of the trial. Subsequent Trials: The stimulus onset time is based on the previous trial's onset time, reaction time, and the current trial's ITI. This ensures that each trial starts at a dynamically calculated time, allowing for variable reaction times and ITIs between trials.
+    * present stimuli and collect responses
+    * reset the clock
+    * get the key responses and attach the result to the output data frame
+  * save the block specific data frame
+  * give a feedback
