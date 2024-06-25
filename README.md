@@ -13,26 +13,26 @@
 * In the end we have the following columns: ***block, unitdur, percentage, stim_code, iti, seed, stim_name, lowf, highf, fstep, timestep, tonedur, nrep, rtime, fs, signal_length, stim_duration, isi***
 
 # experiment_params.py
-Stimulus related parameters:
-Duration
-Proportion of repeating tones
-Number of blocks
-Inter trial interval (iti)
-Output column names → participant_id, time, block_idx, trial_idx, rt, key_name, key_tDwon, button_press_duration, stim_code, unitdur, percentage, expected_response, actual_response, counterbalance_condition
-Audio parameters
+* Stimulus related parameters:
+  * Duration
+  * Repeating percentage of the tones
+* Number of blocks
+* Inter trial interval (iti)
+* Output column names → ***participant_id, time, block_idx, trial_idx, tapping_file_name, stim_code, unitdur, percentage***
+* Audio parameters
 
-stimulus_params.py
-Low frequency 
-High frequency
-Frequency step
-Time step
-Tone duration
-Unit duration
-Number of repetition
-Percentage
-Seed
-Rise time
-Sampling frequency
+# stimulus_params.py
+* Low frequency 
+* High frequency
+* Frequency step
+* Time step
+* Tone duration
+* Unit duration
+* Number of repetition
+* Percentage
+* Seed
+* Rise time
+* Sampling frequency
 
 tone_cloud_production.py
 This function generates tone clouds stimulus with specified frequency and time perturbations and repeated tones. It ensures reproducibility with a random seed and allows customization through parameter changes. The generated signal is normalized and padded to avoid clipping and ensure proper alignment.
