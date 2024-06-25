@@ -49,4 +49,8 @@ import this as dff
 5. **save_output_df(output, experiment_mark, which_block, data_dir):** The function saves the provided output data to a file in a specified directory. The file is named based on the block number and experiment mark, and the data is saved in a tab-separated format without row indices.
 6. **save_tapping_output(file_path, output, participant_id, which_block):** This is different from the fifth one. File_path is a block and subject specific directory where their .wav files are stored. Along with those .wav files, we also save the presented stimulus information, which is output. This also contains the name list of the wav files that store the tapping information.
 
-# 
+# run_experiment_functions.py 
+import this as ef
+1. get_datetime_string
+2. setup_audio_files (sound_filenames, stim_for_block, params): The function preloads and processes a list of audio files, ensuring they have a consistent sampling rate and number of channels. The audio data is scaled by a specified RMS value and stored in a dictionary for later use, along with the sampling rate and channel information.
+3. display_text(string, win): The function displays a string of text both on a PsychoPy window (if provided) and in the console. It then returns the time at which the text was displayed. The function uses PsychoPy's visual.TextStim to handle the graphical display of the text.
