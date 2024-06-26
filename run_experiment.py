@@ -125,7 +125,9 @@ for iblock in range(nBlocks):
     #DEFINE STIMULI (STREAM)
     #=====================
     # Initialize an audio stream with the global sampling rate and channels
-    stream = [audio.Stream(freq=fs, device_id = params.device_id, mode = 3, latency_class = 3, channels=[channels, channels])]
+    # channels = [channels, 2], here 2 corresponds to the channel of the output (microphone and the looped audio signal)
+    # the first channels value, which is 1, correspond to the input of the channel, which is the sent audio signal
+    stream = [audio.Stream(freq=fs, device_id = params.device_id, mode = 3, latency_class = 3, channels=[channels, 2])]
     
     #=============
     # THIS PART IS CRUCIAL
