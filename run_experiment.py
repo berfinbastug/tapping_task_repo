@@ -61,6 +61,38 @@ timer = core.Clock()
 win = visual.Window([1920, 1080], fullscr=True, monitor="testMonitor", units="cm", screen = 1)
 
 
+experiment_start_text = ("Welcome to our experiment.\n"
+                         "Please carefully read the following instructions.\n"
+                         "\n"
+                         "\n"
+                         "You can press any button to continue to the next page.")
+
+ef.display_text(experiment_start_text, win)
+kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
+
+experiment_details_text = ("This session consists of 7 blocks. Each block lasts about 11 minutes." 
+                           "There will be short breaks between each block. Use this time to rest and prepare for the next block.\n"
+                           "\n"
+                           "\n" 
+                           "Continue for detailed instructions about the experimental procedure.")
+
+ef.display_text(experiment_details_text, win)
+kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
+
+experimental_instructions = ("During each block, you will hear long sequences of noise-like sounds."
+                             "Your task is to tap your finger next to the attached microphone as soon as you hear the sound and sustain your tapping until the end of the sound sequence." 
+                             "Some of these sound sequences contain repeating chunks. Try to detect these repeating chunks, and when you do, tap in synchrony with them." 
+                             "This means aligning each tap with each repeating chunk and tapping at the same speed as the repeating chunks.\n" 
+                             "The repeating chunks are present in most trials, sometimes obvious and sometimes not. In any case, try your best to detect the repetitions and tap in sync with them." 
+                             "If you do not detect any repeating chunks, just continuously tap your finger with any rhythm or speed you wish.\n"
+                             "\n"
+                             "Press any button to continue.")
+
+ef.display_text(experimental_instructions, win)
+kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
+
+
+
 # learn nblocks
 # counterbalance the order of block presentation
 # i think in my case there is no need for counterbalancing because all blocks are similar
