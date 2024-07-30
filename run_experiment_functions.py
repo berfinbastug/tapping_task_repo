@@ -65,7 +65,11 @@ def setup_audio_files(sound_filenames, stim_for_block, params):
 def display_text(string, win):
     if win is not None:
         text = visual.TextStim(
-            win, text=string
+            win, 
+            text=string,
+            height = 1.2,
+            alignText = 'center',
+            wrapWidth = 40.0
         )
         text.draw()
         win.flip()
