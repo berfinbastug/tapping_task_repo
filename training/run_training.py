@@ -113,11 +113,11 @@ kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
 
 
 training_instructions = ("During the experiment, you will hear long sequences of noise-like sounds."
-                             "Your task is to tap your finger next to the attached microphone as soon as you hear the sound and sustain your tapping until the end of the sound sequence." 
-                             "Some of these sound sequences contain repeating chunks. Try to detect these repeating chunks, and when you do, tap in synchrony with them." 
-                             "This means aligning each tap with each repeating chunk and tapping at the same speed as the repeating chunks.\n" 
-                             "The repeating chunks are present in most trials, sometimes obvious and sometimes not. In any case, try your best to detect the repetitions and tap in sync with them." 
-                             "If you do not detect any repeating chunks, just continuously tap your finger with any rhythm or speed you wish.\n"
+                             "Your task is to tap your finger next to the attached microphone as soon as you hear the sound and keep tapping until the sequence ends." 
+                             "Some of these sound sequences contain repeating patterns that create a certain beat. Try to detect these repeating patterns and tap in synchrony with them." 
+                             "This means aligning each tap with each repeating pattern and tapping at the same speed as the repeating pattern.\n" 
+                             "The repeating patterns will be present in some trials, sometimes obvious and sometimes not. In any case, try your best to detect the repetitions and tap in sync with them." 
+                             "If you do not detect any repeating pattern, just continuously tap your finger with any rhythm or speed you wish.\n"
                              "\n"
                              "Press any button to continue.")
 
@@ -171,7 +171,7 @@ while True: # Loop should run indefinitely until a break condition is met
     WaitSecs(stim_dur)
     # current_audio_data, absrecposition, overflow, cstarttime = stream[0].get_audio_data(min_secs = stim_dur + 1)
 
-    question_text = ("Can you detect the repeating chunks?\n"
+    question_text = ("Can you detect the repetition?\n"
                     "\n"
                     "\n"
                     "LEFT: YES               RIGHT: NO\n"
@@ -211,7 +211,7 @@ while True:
     tonset = stream[0].start(when = onset_time, wait_for_start = 1)
     WaitSecs(stim_dur)
     # current_audio_data, absrecposition, overflow, cstarttime = stream[0].get_audio_data(min_secs = stim_dur + 1)
-    question_text = ("Can you detect the repeating chunks?\n"
+    question_text = ("Can you detect the repetition?\n"
                     "\n"
                     "\n"
                     "LEFT: YES               RIGHT: NO\n"
@@ -248,7 +248,7 @@ while True:
     WaitSecs(stim_dur)
     #current_audio_data, absrecposition, overflow, cstarttime = stream[0].get_audio_data(min_secs = stim_dur + 1)
 
-    question_text = ("Can you detect the repeating chunks?\n"
+    question_text = ("Can you detect the repetition?\n"
                     "\n"
                     "\n"
                     "LEFT: YES               RIGHT: NO\n"
@@ -329,31 +329,31 @@ win.close()
 
 
 
-# Generate time axis
-fs = 44100
-for i in all_audios:
-    time_axis = np.linspace(0, len(i) / fs, num=len(i))
+# # Generate time axis
+# fs = 44100
+# for i in all_audios:
+#     time_axis = np.linspace(0, len(i) / fs, num=len(i))
 
-    # Plot the audio signal
-    plt.figure(figsize=(15, 5))
-    if len(i.shape) == 2:
-        plt.subplot(2, 1, 1)
-        plt.plot(time_axis, i[:, 0], label='Left Channel')
-        plt.xlabel('Time [s]')
-        plt.ylabel('Amplitude')
-        plt.title('Left Channel')
+#     # Plot the audio signal
+#     plt.figure(figsize=(15, 5))
+#     if len(i.shape) == 2:
+#         plt.subplot(2, 1, 1)
+#         plt.plot(time_axis, i[:, 0], label='Left Channel')
+#         plt.xlabel('Time [s]')
+#         plt.ylabel('Amplitude')
+#         plt.title('Left Channel')
 
-        plt.subplot(2, 1, 2)
-        plt.plot(time_axis, i[:, 1], label='Right Channel')
-        plt.xlabel('Time [s]')
-        plt.ylabel('Amplitude')
-        plt.title('Right Channel')
-    else:
-        plt.plot(time_axis, i, label='Mono Channel')
-        plt.xlabel('Time [s]')
-        plt.ylabel('Amplitude')
-        plt.title('Audio Signal')
+#         plt.subplot(2, 1, 2)
+#         plt.plot(time_axis, i[:, 1], label='Right Channel')
+#         plt.xlabel('Time [s]')
+#         plt.ylabel('Amplitude')
+#         plt.title('Right Channel')
+#     else:
+#         plt.plot(time_axis, i, label='Mono Channel')
+#         plt.xlabel('Time [s]')
+#         plt.ylabel('Amplitude')
+#         plt.title('Audio Signal')
 
-    plt.tight_layout()
-    plt.show()
+#     plt.tight_layout()
+#     plt.show()
 
