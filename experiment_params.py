@@ -26,7 +26,7 @@ output_data_columns = ['participant_id', 'time', 'block_idx',
 #SET UP AUDIO PARAMETERS
 #=====================
 # device_name = 'US-4x4HR: USB Audio (hw:0,0)'
-# device_name = 'MacBook Pro Speakers'
-device_name = 'US-2x2HR'
+device_name = 'MacBook Pro Speakers'
+# device_name = 'US-2x2HR'
 device_id = 1
 stimulus_rms = 1
