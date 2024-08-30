@@ -7,7 +7,7 @@ import os
 #DEFINE DIRECTORIES
 #=====================
 # when I switch to a new computer, just change the main_dir
-main_dir = '/Users/bastugb/Desktop/tapping_experiment'
+main_dir = '/home/bastugb/Documents/tapping_experiment'
 data_dir = main_dir + '/data'
 
 # this part is temporary
@@ -15,13 +15,16 @@ which_block = 1
 specific_block = f'tapping_experiment_block{which_block}'
 block_dir = data_dir + '/' + specific_block
 
-pid = 0
+pid = 10
 wav_directory = block_dir + '/participantid_' + str(pid)
 files_in_wavdirectory = os.listdir(wav_directory)
 wav_list  = [file for file in files_in_wavdirectory if file.endswith('.wav')]
 
 # Read the WAV file
 example_wav = wav_directory + '/' + wav_list[0]
+
+# find out the actual data
+# actual_signal = '/home/bastugb/Documents/tapping_experiment/stimuli/tapping_experiment_block1/tapping_experiment_index_6_unitdur_0.4_percentage_0.6666666666666666.wav'
 fs, mic_signal = wavfile.read(example_wav)
 
 # Generate time axis
@@ -49,3 +52,12 @@ else:
     plt.title('Audio Signal')
 plt.tight_layout()
 plt.show()
+
+
+# plot actual signal
+fs, actual_audio = wavfile.read(actual_signal)
+time_axis_a = np.linspace(0, len(actual_audio) / fs, num=len(actual_audio))
+plt.plot(time_axis_a, actual_audio, label='Mono Channel')
+plt.xlabel('Time [s]')
+plt.ylabel('Amplitude')
+plt.title('Audio Signal')
