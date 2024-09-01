@@ -5,6 +5,9 @@ import numpy as np
 import analysis_helper_functions as hf
 import matplotlib.pyplot as plt
 import seaborn as sns
+from math import pi
+import tapping_data_plotting_functions as plot_f
+
 
 # DEFINE DIRECTORIES
 main_directory = '/Users/bastugb/Desktop/tapping_experiment/'
@@ -12,52 +15,82 @@ cleaned_data_directory = main_directory + 'clean_data/'
 
 
 # %%
-fs = 44100
+# here, we have all kinds of tsv files 
 items = os.listdir(cleaned_data_directory)
+
+# i need these tsv files in an organized way
 # things to be read
 # a) all actual onset values
-# b) 
-onset_signals = [item for item in items if 'peak_points_in_signal' in item]
-onset_signals_sorted = sorted(onset_signals)
+# b) all tap onset points in signal
+# c) all unit dur values
+# d) wav file names
 
-actual_onset_signals = [item for item in items if 'actual_onset_values' in item]
-actual_onset_signals_sorted = sorted(actual_onset_signals)
+# subset these tsv files according to their categories
+actual_onset_values = [item for item in items if 'all_actual_onset_values' in item]
+tap_onset_signals = [item for item in items if 'tap_onset_points_in_signal' in item]
+unit_dur_values = [item for item in items if 'unit_dur_values' in item]
+wav_file_names = [item for item in items if 'wav_file_names' in item]
+
+# sort these file names because they dont match
+actual_onset_values_sorted = sorted(actual_onset_values)
+tap_onset_signals_sorted = sorted(tap_onset_signals)
+unit_dur_values_sorted = sorted(unit_dur_values)
+wav_file_names_sorted = sorted(wav_file_names)
+
+
+fs = 44100  # sampling rate of the data
+
+
 # %%
+# later add a for loop here
 # read the onset signals one by one
-o_idx = 0
-which_onset_signals = onset_signals_sorted[o_idx]
-onset_signals_df = pd.read_csv((cleaned_data_directory + which_onset_signals), delimiter= '\t')
+block_idx = 0
+tmp_actual_onset_values = actual_onset_values_sorted[block_idx]
+tmp_tap_onset_signals = tap_onset_signals_sorted[block_idx]
+tmp_unit_dur_values = unit_dur_values_sorted[block_idx]
+tmp_wav_file_names = wav_file_names_sorted[block_idx]
+
+actual_onset_values_df = pd.read_csv((cleaned_data_directory + tmp_actual_onset_values), delimiter= '\t')
+tap_onset_signals_df = pd.read_csv((cleaned_data_directory + tmp_tap_onset_signals), delimiter= '\t')
+unit_dur_values_df = pd.read_csv((cleaned_data_directory + tmp_unit_dur_values), delimiter= '\t')
+wav_file_names_df = pd.read_csv((cleaned_data_directory + tmp_wav_file_names), delimiter= '\t')
 
 
-which_actual_onset_signals = actual_onset_signals_sorted[o_idx]
-actual_onset_signals_df = pd.read_csv((cleaned_data_directory + which_actual_onset_signals), delimiter = '\t')
+# %%
+all_tap_onset_deviations = []
+all_tapping_vectors = []
 
-trial_idx = 0
+for i in range(len(actual_onset_values_df)):
 
-# the tapping points are rows of a data frame
-# convert them to a numpy array
-trial_tap_onset_vals = onset_signals_df.iloc[trial_idx].values
-trial_actual_onset_vals = actual_onset_signals_df.iloc[trial_idx].values
+    # then another for loop here
+    trial_idx = i
+    trial_unit_dur_value = unit_dur_values_df.iloc[trial_idx].values[0]
 
-# Remove NaN values
-cleaned_tap_onset_vals = trial_tap_onset_vals[~np.isnan(trial_tap_onset_vals)]   
-n_tap = len(cleaned_tap_onset_vals)
+    # the tapping points are rows of a data frame
+    # convert them to a numpy array
+    trial_actual_onset_values = actual_onset_values_df.iloc[trial_idx].values
+    trial_tap_onset_values  = tap_onset_signals_df.iloc[trial_idx].values
 
-# Find the index of the closest smaller value in actual_onset_time_points for each element in rt_array_trial_1
-closest_indices = np.searchsorted(trial_actual_onset_vals, cleaned_tap_onset_vals, side='right') - 1
+    result_array_msecs, n_tap = hf.tap_onset_deviation_ms(trial_tap_onset_values, trial_actual_onset_values, fs)
+    tapping_vectors = hf.obtain_tapping_vectors(result_array_msecs, trial_unit_dur_value)
+    
+    all_tap_onset_deviations.append(result_array_msecs)
+    all_tapping_vectors.append(tapping_vectors)
 
-  
-# I am doing this because there might be cases where the ntap is lower than nrep. 
-# but the code above makes them equal length. I am cutting the closest indices with respect to the
-# actual number of taps
-cut_closest_indices = closest_indices[:n_tap]
 
-# Identify repeated indices and store them
-# i don't know what to do with them for now (16.04.2024)
-unique_elements, counts = np.unique(cut_closest_indices, return_counts=True)
-repeated_elements = unique_elements[counts > 1]
 
-# Subtract tapping points from the closest smaller value in actual_onset_time_points
-result_array = cleaned_tap_onset_vals - trial_actual_onset_vals[cut_closest_indices]
-result_array_msecs = result_array/fs
+# %%
+for trial_idx in range(len(all_tapping_vectors)):
 
+    trial_wav_file_name = wav_file_names_df.iloc[trial_idx].values[0]
+    result_array_msecs = all_tap_onset_deviations[trial_idx]
+    trial_unit_dur_value = unit_dur_values_df.iloc[trial_idx].values[0]
+    plot_f.plot_vertical_lines_tapping(result_array_msecs, trial_wav_file_name)
+
+# %%
+plot_f.circular_plot_tapping_vectors(tapping_vectors, trial_wav_file_name)
+plot_f.plot_vertical_lines_tapping(result_array_msecs, trial_wav_file_name)
+
+# %%
+
+# %%

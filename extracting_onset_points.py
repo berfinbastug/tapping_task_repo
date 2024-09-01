@@ -7,7 +7,7 @@ import librosa
 import librosa.display
 import re
 from scipy.signal import butter, filtfilt, find_peaks
-import analysis_helper_functions as ahf
+import cleaning_analysis_helper_functions as ahf
 import pandas as pd
 
 
