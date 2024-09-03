@@ -21,6 +21,22 @@ def find_peaks(signal, threshold, time, step_size):
 
     return peak_points_in_time, peak_points_in_signal
 
+# step size is there to cut off high frequency oscillations
+def find_onset_peak(signal, threshold, time, step_size):
+    time = time.flatten()  
+    onset_points_in_time = []
+    onset_points_in_signal = []
+    i = 1
+    while i in range(1, len(signal)-1):
+        if signal[i] >= threshold:
+            onset_points_in_signal.append(i)
+            onset_points_in_time.append(time[i])
+            i = i + step_size
+        else:
+            i = i + 1
+
+    return onset_points_in_time, onset_points_in_signal
+
 
 
 def plot_audio_with_peaks(signal, time, peak_points_in_time, peak_points_in_signal):
