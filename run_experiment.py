@@ -12,8 +12,7 @@ from psychtoolbox import audio, PsychPortAudio
 from scipy.io import wavfile
 import run_experiment_functions as ef
 import data_frame_functions as dff
-
-# experiment specific stuff
+import tap_related_functions as trf
 import experiment_params as params
 
 #=====================
@@ -72,19 +71,19 @@ kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
 
 experiment_details_text = ("This session consists of 7 blocks. Each block lasts about 11 minutes." 
                            "There will be short breaks between each block. Use this time to rest and prepare for the next block.\n"
-                           "\n"
+                           "You can leave the booth in between blocks to stretch your legs."
                            "\n" 
                            "Continue for detailed instructions about the experimental procedure.")
 
 ef.display_text(experiment_details_text, win)
 kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
 
-experimental_instructions = ("During each block, you will hear long sequences of noise-like sounds."
-                             "Your task is to tap your finger next to the attached microphone as soon as you hear the sound and sustain your tapping until the end of the sound sequence." 
-                             "Some of these sound sequences contain repeating chunks. Try to detect these repeating chunks, and when you do, tap in synchrony with them." 
-                             "This means aligning each tap with each repeating chunk and tapping at the same speed as the repeating chunks.\n" 
-                             "The repeating chunks are present in most trials, sometimes obvious and sometimes not. In any case, try your best to detect the repetitions and tap in sync with them." 
-                             "If you do not detect any repeating chunks, just continuously tap your finger with any rhythm or speed you wish.\n"
+experimental_instructions = ("During the experiment, you will hear long sequences of noise-like sounds."
+                             "Your task is to tap your finger next to the attached microphone as soon as you hear the sound and keep tapping until the sequence ends. " 
+                             "Some of these sound sequences contain repeating patterns that create a certain beat. Try to detect these repeating patterns and tap in synchrony with them." 
+                             "This means aligning each tap with each repeating pattern and tapping at the same speed as the repeating pattern.\n" 
+                             "The repeating patterns will be present in some trials, sometimes obvious and sometimes not. In any case, try your best to detect the repetitions and tap in sync with them." 
+                             "If you do not detect any repeating pattern, just continuously tap your finger with any rhythm or speed you wish.\n"
                              "\n"
                              "Press any button to continue.")
 
@@ -103,7 +102,7 @@ nBlocks = params.nblocks
 #=====================
 # LOOP OVER BLOCKS
 #=====================
-for iblock in range(2):
+for iblock in range(1):
     which_block = iblock + 1
     
     #=====================
@@ -259,6 +258,20 @@ for iblock in range(2):
                                'unitdur': [row['unitdur']],
                                'percentage': [row['percentage']]})
         output_data = pd.concat([output_data, tmp_df], ignore_index=True)
+
+        refractory_period = 0.15
+        threshold = 0.1
+        onset_points_in_time, onset_points_in_signal = trf.find_tap_onset(fs, refractory_period, threshold, current_audio_data[:, 1])
+
+        crude_ntap = len(onset_points_in_signal)
+
+        # check if no taps are detected
+        if crude_ntap == 0:
+            # if no taps detected, display a warning message about low signal quality
+            ef.display_text("The signal quality is too low; please wait for the experimenter's instructions.", win)
+            kb.waitKeys(keyList=['space'], waitRelease=True)
+        else:
+            print(crude_ntap)
 
     # save the name of the wav files at the end of an each block    
     dff.save_tapping_output(subject_block_specific_path, output_data, exp_info['participant_id'], which_block)
