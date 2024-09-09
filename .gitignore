@@ -4,16 +4,17 @@
 *.ipnyb
 
 
-.DS_Store
-.DS_Store?
+*.DS_Store
+*.DS_Store?
 
-.DS_Store
+*.DS_Store
 
-data/
-stimuli/
-table/
-training/
-clean_data/
-archive/
-20240802_data/
+*data/
+*stimuli/
+*table/
+*training/
+*clean_data/
+*spontaneous/
+*archive/
+*20240802_data/
 *.yml
