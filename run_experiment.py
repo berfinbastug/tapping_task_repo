@@ -64,7 +64,7 @@ experiment_start_text = ("Welcome to our experiment.\n"
                          "Please carefully read the following instructions.\n"
                          "\n"
                          "\n"
-                         "You can press any button to continue to the next page.")
+                         "You can now put on your headphones and proceed with the detailed instructions regarding the experimental procedure.")
 
 ef.display_text(experiment_start_text, win)
 kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
@@ -79,13 +79,13 @@ ef.display_text(experiment_details_text, win)
 kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
 
 experimental_instructions = ("During the experiment, you will hear long sequences of noise-like sounds."
-                             "Your task is to tap your finger next to the attached microphone as soon as you hear the sound and keep tapping until the sequence ends. " 
-                             "Some of these sound sequences contain repeating patterns that create a certain beat. Try to detect these repeating patterns and tap in synchrony with them." 
-                             "This means aligning each tap with each repeating pattern and tapping at the same speed as the repeating pattern.\n" 
-                             "The repeating patterns will be present in some trials, sometimes obvious and sometimes not. In any case, try your best to detect the repetitions and tap in sync with them." 
-                             "If you do not detect any repeating pattern, just continuously tap your finger with any rhythm or speed you wish.\n"
-                             "\n"
-                             "Press any button to continue.")
+                            "Your task is to tap your finger on the attached microphone as soon as you hear the sound and keep tapping until the end of the sound sequence. " 
+                            "Some of these sound sequences contain repeating patterns that form a distinct beat. Try to detect these repeating patterns and tap in synchrony with each cycle of repetition. " 
+                            "This means aligning each tap with each cycle of the repeating pattern and tapping at the same speed as the repeating pattern. \n" 
+                            "The repeating patterns will be present in some trials, sometimes obvious and sometimes not. In any case, try your best to detect the repetitions and tap in sync with them. " 
+                            "If you do not detect any repeating pattern, just continuously tap your finger with any rhythm or speed you wish, as long as it is at a regular interval.\n"
+                            "\n"
+                            "Press any button to continue.")
 
 ef.display_text(experimental_instructions, win)
 kb.waitKeys(keyList=['1', '2', '3', '4'], waitRelease=True)
@@ -102,7 +102,7 @@ nBlocks = params.nblocks
 #=====================
 # LOOP OVER BLOCKS
 #=====================
-for iblock in range(1):
+for iblock in range(nBlocks):
     which_block = iblock + 1
     
     #=====================
@@ -212,7 +212,7 @@ for iblock in range(1):
     # LOOP OVER TRIALS
     #=====================
     stream[0].get_audio_data()  # I think I am doing this to clear the buffer just before the recording
-    for itrial in range(2):
+    for itrial in range(nTrials):
         #=====================
         #START TRIAL
         #===================== 
