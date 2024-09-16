@@ -10,15 +10,38 @@ from scipy.signal import butter, filtfilt, find_peaks
 import cleaning_analysis_helper_functions as ahf
 import pandas as pd
 
-
 # %%
-# TO STORE ITEMS
-all_unit_dur_values = []
-all_tap_onset_points_in_time = []
-all_tap_onset_points_in_signal = []
-all_actual_onset_values = []
-all_wav_file_names = []  # this is a bit circular but I thought it is necessary to double check each step
+# Specify directory
+clean_data_path = '/Users/bastugb/Desktop/tapping_experiment/clean_data/'
+data_directory = '/Users/bastugb/Desktop/tapping_experiment/data/'
 
+# Specify block and participant IDs
+block_id = 'block1'
+participant_id = '7'
+
+# Filter for block and participant
+try:
+    # Find the block matching block_id
+    tmp_block = next(item for item in os.listdir(data_directory) if block_id in item)
+
+    # Directory for participants within the block
+    participants_directory = os.path.join(data_directory, tmp_block)
+    
+    # Find the participant matching participant_id
+    tmp_participant = next(item for item in os.listdir(participants_directory) if participant_id in item)
+
+    # Get participant directory
+    participant_directory = os.path.join(participants_directory, tmp_participant)
+
+    # List all .wav files in the participant directory
+    wav_trials = [file for file in os.listdir(participant_directory) if file.endswith('.wav')]
+
+    #print("WAV Trials:", wav_trials)
+
+except StopIteration:
+    print("Block or participant not found.")
+except FileNotFoundError as e:
+    print(f"Error: {e}")
 
 
 # %%
@@ -37,35 +60,34 @@ def from_list_to_df(list):
     return df
 
 
-
 # %%
-clean_data_path = '/Users/bastugb/Desktop/tapping_experiment/clean_data/'
+# TO STORE ITEMS
+all_unit_dur_values = []
+all_tap_onset_points_in_time = []
+all_tap_onset_points_in_signal = []
+all_actual_onset_values = []
+all_wav_file_names = []  # this is a bit circular but I thought it is necessary to double check each step
 
 
-
-# %%
-# SPECIFY DIRECTORY
-data_directory = '/Users/bastugb/Desktop/tapping_experiment/data/'
-block_idx = 2
-participant_idx = 2
 
 
 
 # %%
-wav_idx = 1
-filename, which_block, which_participant = ahf.get_wav_file(data_directory, block_idx, participant_idx, wav_idx)
+wav_idx = 0
+filename = wav_trials[wav_idx]
 print(filename)
-print('participant_id: ', which_participant)
-print('block_id: ', which_block)
+wav_directory = data_directory + 'tapping_experiment_' + block_id + '/participantid_' + participant_id + '/' + filename
 unitdur_value = ahf.find_unitdur(filename)
 print('unit duration is: ', unitdur_value)
 
 
 
 
+
+
 # %%
 # READ OUT THE SIGNAL
-sample_rate, data = wavfile.read(filename)
+sample_rate, data = wavfile.read(wav_directory)
 sound_data_index = 0
 tapping_data_index = 1
 sound_data = data[:,sound_data_index]
@@ -99,15 +121,13 @@ ax = ahf.plot_signal_with_onsets(time_axis, tapping_data, actual_onsets, sample_
 
 
 
-
-
 # %%
-# to simplify the matter take the absolute values of the signal values
-# this is just for plotting purposes
-only_positive_signal = np.abs(tapping_data)  # The first onset is the first location in samples, and it is used to perform the chunkwise
-ax = ahf.plot_signal_with_onsets(time_axis, only_positive_signal, actual_onsets, sample_rate)
-#ax.set_ylim([0, 0.001])
-plt.show()
+# # to simplify the matter take the absolute values of the signal values
+# # this is just for plotting purposes
+# only_positive_signal = np.abs(tapping_data)  # The first onset is the first location in samples, and it is used to perform the chunkwise
+# ax = ahf.plot_signal_with_onsets(time_axis, only_positive_signal, actual_onsets, sample_rate)
+# #ax.set_ylim([0, 0.001])
+# plt.show()
 
 
 
@@ -116,7 +136,7 @@ plt.show()
 # THRESHOLDING & REFRACTORY PERIOD
 # inspect the data, set a threshold to y axis
 # Add a green horizontal line at a specific y-value
-tapping_threshold = 0.0001 # THRESHOLD, the y-value where you want to draw the line
+tapping_threshold = 0.15 # THRESHOLD, the y-value where you want to draw the line
 refractory_period = 0.2 # in seconds
 refractory_period_samples = int(refractory_period * sample_rate)  # should be integer, otherwise find peak function raises an error
 # ax.axhline(y=tapping_threshold, color='green', linestyle='-')
@@ -130,10 +150,10 @@ refractory_period_samples = int(refractory_period * sample_rate)  # should be in
 # %%
 # LOCATE THE ONSETS
 tap_onset_points_in_time, tap_onset_points_in_signal = ahf.find_peaks(tapping_data, tapping_threshold, time_axis, refractory_period_samples)
-ax = ahf.plot_signal_with_onsets(time_axis, only_positive_signal, actual_onsets, sample_rate)
+ax = ahf.plot_signal_with_onsets(time_axis, tapping_data, actual_onsets, sample_rate)
 ax.axhline(y=tapping_threshold, color='green', linestyle='-')
-ax.plot(tap_onset_points_in_time, [only_positive_signal[i] for i in tap_onset_points_in_signal], '.', color='black', markersize=10)
-ax.set_ylim([0, 0.0009])
+ax.plot(tap_onset_points_in_time, [tapping_data[i] for i in tap_onset_points_in_signal], '.', color='black', markersize=10)
+#ax.set_ylim([0, 0.0009])
 plt.show
 print(len(tap_onset_points_in_signal))
 
@@ -155,7 +175,7 @@ all_wav_file_names.append(wav_name)
 
 
 # %%
-data_mark = which_participant + '_' + which_block + '_'
+data_mark =  participant_id + '_' + block_id + '_'
 
 
 all_peak_points_in_signal_df = from_list_to_df(all_tap_onset_points_in_signal)
